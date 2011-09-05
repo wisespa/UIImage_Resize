@@ -4,8 +4,6 @@
 // No warranty is expressed or implied.
 
 #import "UIImage+Resize.h"
-//#import "UIImage+RoundedCorner.h"
-//#import "UIImage+Alpha.h"
 
 // Private helper methods
 @interface UIImage ()
@@ -45,7 +43,7 @@
                                  thumbnailSize);
     UIImage *croppedImage = [resizedImage croppedImage:cropRect];
     
-    return croppedImage;//[transparentBorderImage roundedCornerImage:cornerRadius borderSize:borderSize];
+    return croppedImage;
 }
 
 // Returns a rescaled copy of the image, taking into account its orientation
