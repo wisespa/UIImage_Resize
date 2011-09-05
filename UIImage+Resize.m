@@ -31,7 +31,6 @@
 // Returns a copy of this image that is squared to the thumbnail size.
 // If transparentBorder is non-zero, a transparent border of the given size will be added around the edges of the thumbnail. (Adding a transparent border of at least one pixel in size has the side-effect of antialiasing the edges of the image when rotating it using Core Animation.)
 - (UIImage *)thumbnailImage:(NSInteger)thumbnailSize
-          transparentBorder:(NSUInteger)borderSize
        interpolationQuality:(CGInterpolationQuality)quality {
     UIImage *resizedImage = [self resizedImageWithContentMode:UIViewContentModeScaleAspectFill
                                                        bounds:CGSizeMake(thumbnailSize, thumbnailSize)
@@ -46,9 +45,7 @@
                                  thumbnailSize);
     UIImage *croppedImage = [resizedImage croppedImage:cropRect];
     
-    UIImage *transparentBorderImage = borderSize ? [croppedImage transparentBorderImage:borderSize] : croppedImage;
-
-    return transparentBorderImage;//[transparentBorderImage roundedCornerImage:cornerRadius borderSize:borderSize];
+    return croppedImage;//[transparentBorderImage roundedCornerImage:cornerRadius borderSize:borderSize];
 }
 
 // Returns a rescaled copy of the image, taking into account its orientation
