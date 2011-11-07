@@ -21,7 +21,7 @@
 // This method ignores the image's imageOrientation setting.
 - (UIImage *)croppedImage:(CGRect)bounds {
     CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], bounds);
-    UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
+    UIImage *croppedImage = [UIImage imageWithCGImage:imageRef scale:([self respondsToSelector:@selector(scale)] ? self.scale : 1.0) orientation:self.imageOrientation];
     CGImageRelease(imageRef);
     return croppedImage;
 }
@@ -106,7 +106,7 @@
            drawTransposed:(BOOL)transpose
      interpolationQuality:(CGInterpolationQuality)quality {
     CGRect newRect;
-    if (NSClassFromString(@"ADBannerView"))
+    if ([self respondsToSelector:@selector(scale)])
         newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width * self.scale, newSize.height * self.scale));
     else
         newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
@@ -133,11 +133,7 @@
     
     // Get the resized image from the context and a UIImage
     CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
-    UIImage *newImage;
-    if (NSClassFromString(@"ADBannerView"))
-        newImage = [UIImage imageWithCGImage:newImageRef scale:self.scale orientation:self.imageOrientation];
-    else
-        newImage = [UIImage imageWithCGImage:newImageRef];
+    UIImage *newImage = [UIImage imageWithCGImage:newImageRef scale:([self respondsToSelector:@selector(scale)] ? self.scale : 1.0) orientation:self.imageOrientation];
     
     // Clean up
     CGContextRelease(bitmap);
