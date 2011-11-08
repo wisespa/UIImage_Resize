@@ -21,7 +21,12 @@
 // This method ignores the image's imageOrientation setting.
 - (UIImage *)croppedImage:(CGRect)bounds {
     CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], bounds);
-    UIImage *croppedImage = [UIImage imageWithCGImage:imageRef scale:([self respondsToSelector:@selector(scale)] ? self.scale : 1.0) orientation:self.imageOrientation];
+    UIImage *croppedImage;
+    if ([self respondsToSelector:@selector(scale)] && [UIImage respondsToSelector:@selector(imageWithCGImage:scale:orientation:)]) {
+    	croppedImage = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:self.imageOrientation];
+    } else {
+    	croppedImage = [UIImage imageWithCGImage:imageRef];
+    }
     CGImageRelease(imageRef);
     return croppedImage;
 }
@@ -133,7 +138,13 @@
     
     // Get the resized image from the context and a UIImage
     CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
-    UIImage *newImage = [UIImage imageWithCGImage:newImageRef scale:([self respondsToSelector:@selector(scale)] ? self.scale : 1.0) orientation:self.imageOrientation];
+    UIImage *newImage;
+    if ([self respondsToSelector:@selector(scale)] && [UIImage respondsToSelector:@selector(imageWithCGImage:scale:orientation:)]) {
+    	newImage = [UIImage imageWithCGImage:newImageRef scale:self.scale orientation:self.imageOrientation];
+    } else {
+    	newImage = [UIImage imageWithCGImage:newImageRef];
+    }
+    
     
     // Clean up
     CGContextRelease(bitmap);
