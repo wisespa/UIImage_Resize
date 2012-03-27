@@ -13,4 +13,8 @@
 - (UIImage *)resizedImageWithContentMode:(UIViewContentMode)contentMode
                                   bounds:(CGSize)bounds
                     interpolationQuality:(CGInterpolationQuality)quality;
+
+// Customized thumbnail method
+// Considered retina scale
+- (UIImage *)thumbnailImageForBirthday:(NSInteger)thumbnailSize;
 @end

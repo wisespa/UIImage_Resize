@@ -31,6 +31,11 @@
     return croppedImage;
 }
 
+- (UIImage *)thumbnailImageForBirthday:(NSInteger)thumbnailSize
+{
+    return [self thumbnailImage: thumbnailSize * [[UIScreen mainScreen] scale] interpolationQuality:kCGInterpolationHigh];
+}
+
 // Returns a copy of this image that is squared to the thumbnail size.
 // If transparentBorder is non-zero, a transparent border of the given size will be added around the edges of the thumbnail. (Adding a transparent border of at least one pixel in size has the side-effect of antialiasing the edges of the image when rotating it using Core Animation.)
 - (UIImage *)thumbnailImage:(NSInteger)thumbnailSize
