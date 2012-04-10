@@ -6,7 +6,7 @@
 #import "UIImage+Resize.h"
 
 // Private helper methods
-@interface UIImage ()
+@interface UIImage (Resize1)
 - (UIImage *)resizedImage:(CGSize)newSize
                 transform:(CGAffineTransform)transform
            drawTransposed:(BOOL)transpose
