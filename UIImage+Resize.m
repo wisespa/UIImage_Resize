@@ -121,25 +121,26 @@
     
     // Fix for a colorspace / transparency issue that affects some types of 
     // images. See here: http://vocaro.com/trevor/blog/2009/10/12/resize-a-uiimage-the-right-way/comment-page-2/#comment-39951
-    
+    // And final solution is here: http://stackoverflow.com/questions/2457116/iphone-changing-cgimagealphainfo-of-cgimage
+    CGColorSpaceRef genericColorSpace = CGColorSpaceCreateDeviceRGB();
     CGContextRef bitmap =CGBitmapContextCreate( NULL,
                                                newRect.size.width,
                                                newRect.size.height,
                                                8,
                                                0,
-                                               CGImageGetColorSpace( imageRef ),
+                                               genericColorSpace,
                                                kCGImageAlphaNoneSkipLast );
+    CGColorSpaceRelease(genericColorSpace);
     
-    /*
-     // Build a context that's the same dimensions as the new size
-     CGContextRef bitmap = CGBitmapContextCreate(NULL,
-     newRect.size.width,
-     newRect.size.height,
-     CGImageGetBitsPerComponent(imageRef),
-     0,
-     CGImageGetColorSpace(imageRef),
-     kCGImageAlphaNoneSkipLast);
-     */
+//    // Build a context that's the same dimensions as the new size
+//    CGContextRef bitmap = CGBitmapContextCreate(NULL,
+//    newRect.size.width,
+//    newRect.size.height,
+//    CGImageGetBitsPerComponent(imageRef),
+//    0,
+//    CGImageGetColorSpace(imageRef),
+//    kCGImageAlphaNoneSkipLast);
+     
     // Rotate and/or flip the image if required by its orientation
     CGContextConcatCTM(bitmap, transform);
     
@@ -282,6 +283,28 @@
     CGContextRelease(ctx);
     CGImageRelease(cgimg);
     return img;
+}
+
+- (UIImage *) normalize {
+    CGFloat SCREEN_SCALE = [[UIScreen mainScreen] scale];
+    CGSize size = CGSizeMake(round(self.size.width * SCREEN_SCALE), round(self.size.height * SCREEN_SCALE));
+    CGColorSpaceRef genericColorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef thumbBitmapCtxt = CGBitmapContextCreate(NULL, 
+                                                         size.width, 
+                                                         size.height, 
+                                                         8, (4 * size.width), 
+                                                         genericColorSpace, 
+                                                         kCGImageAlphaPremultipliedFirst);
+    CGColorSpaceRelease(genericColorSpace);
+    CGContextSetInterpolationQuality(thumbBitmapCtxt, kCGInterpolationDefault);
+    CGRect destRect = CGRectMake(0, 0, size.width, size.height);
+    CGContextDrawImage(thumbBitmapCtxt, destRect, self.CGImage);
+    CGImageRef tmpThumbImage = CGBitmapContextCreateImage(thumbBitmapCtxt);
+    CGContextRelease(thumbBitmapCtxt);    
+    UIImage *result = [UIImage imageWithCGImage:tmpThumbImage scale:SCREEN_SCALE orientation:UIImageOrientationUp];
+    CGImageRelease(tmpThumbImage);
+    
+    return result;    
 }
 
 @end
