@@ -16,7 +16,11 @@
 
 // Customized thumbnail method
 // Considered retina scale
-- (UIImage *)thumbnailImageForBirthday:(NSInteger)thumbnailSize;
+- (UIImage *)thumbnailImage:(NSInteger)thumbnailSize;
+
+// Customized resize method
+// Considered retina scale
+- (UIImage *)resizedImage:(CGSize)newSize;
 
 // fix rotation
 - (UIImage *)fixOrientation;

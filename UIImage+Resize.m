@@ -31,11 +31,6 @@
     return croppedImage;
 }
 
-- (UIImage *)thumbnailImageForBirthday:(NSInteger)thumbnailSize
-{
-    return [self thumbnailImage: thumbnailSize * [[UIScreen mainScreen] scale] interpolationQuality:kCGInterpolationHigh];
-}
-
 // Returns a copy of this image that is squared to the thumbnail size.
 // If transparentBorder is non-zero, a transparent border of the given size will be added around the edges of the thumbnail. (Adding a transparent border of at least one pixel in size has the side-effect of antialiasing the edges of the image when rotating it using Core Animation.)
 - (UIImage *)thumbnailImage:(NSInteger)thumbnailSize
@@ -114,7 +109,7 @@
 - (UIImage *)resizedImage:(CGSize)newSize
                 transform:(CGAffineTransform)transform
            drawTransposed:(BOOL)transpose
-     interpolationQuality:(CGInterpolationQuality)quality {
+interpolationQuality:(CGInterpolationQuality)quality{
     CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
     CGRect transposedRect = CGRectMake(0, 0, newRect.size.height, newRect.size.width);
     CGImageRef imageRef = self.CGImage;
@@ -131,15 +126,6 @@
                                                genericColorSpace,
                                                kCGImageAlphaNoneSkipLast );
     CGColorSpaceRelease(genericColorSpace);
-    
-//    // Build a context that's the same dimensions as the new size
-//    CGContextRef bitmap = CGBitmapContextCreate(NULL,
-//    newRect.size.width,
-//    newRect.size.height,
-//    CGImageGetBitsPerComponent(imageRef),
-//    0,
-//    CGImageGetColorSpace(imageRef),
-//    kCGImageAlphaNoneSkipLast);
      
     // Rotate and/or flip the image if required by its orientation
     CGContextConcatCTM(bitmap, transform);
@@ -152,7 +138,8 @@
     
     // Get the resized image from the context and a UIImage
     CGImageRef newImageRef = CGBitmapContextCreateImage(bitmap);
-    UIImage *newImage = [UIImage imageWithCGImage:newImageRef];
+    UIImage *newImage = [UIImage imageWithCGImage:newImageRef scale:self.scale
+                                                     orientation:self.imageOrientation];
     
     // Clean up
     CGContextRelease(bitmap);
@@ -305,6 +292,26 @@
     CGImageRelease(tmpThumbImage);
     
     return result;    
+}
+
+- (UIImage *)thumbnailImage:(NSInteger)thumbnailSize
+{
+    //Since before iOS 6, there is no [UIImage initWithData:scale]
+    //you have to mannually check whether an image needs to scale for retina
+    float scale = self.scale;
+    if (self.scale != [[UIScreen mainScreen] scale]) {
+        scale = [[UIScreen mainScreen] scale];
+    }
+    return [self thumbnailImage:thumbnailSize * scale interpolationQuality:kCGInterpolationHigh];
+}
+
+- (UIImage *)resizedImage:(CGSize)newSize {
+    float scale = self.scale;
+    if (self.scale != [[UIScreen mainScreen] scale]) {
+        scale = [[UIScreen mainScreen] scale];
+    }
+
+    return [self resizedImage:CGSizeMake(newSize.width * scale, newSize.height * scale) interpolationQuality:kCGInterpolationHigh];
 }
 
 @end
